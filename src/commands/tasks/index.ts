@@ -108,8 +108,9 @@ const getCommand: CommandDefinition = {
   }),
 
   cliMappings: {
-    args: [{ field: 'task_id', name: 'task_id', required: true }],
+    args: [{ field: 'task_id', name: 'task_id', required: false }],
     options: [
+      { field: 'task_id', flags: '--task-id <id>', description: 'Task ID (alternative to positional arg)' },
       { field: 'include_subtasks', flags: '--include-subtasks <bool>', description: 'Include subtasks' },
       { field: 'include_markdown_description', flags: '--include-markdown', description: 'Include markdown description' },
     ],
@@ -205,7 +206,7 @@ const updateCommand: CommandDefinition = {
   description: 'Update an existing task.',
   examples: [
     'clickup tasks update <task_id> --name "Updated name"',
-    'clickup tasks update <task_id> --status "done" --priority 1',
+    'clickup tasks update --task-id abc123 --status "done" --priority 1',
   ],
 
   inputSchema: z.object({
@@ -227,8 +228,9 @@ const updateCommand: CommandDefinition = {
   }),
 
   cliMappings: {
-    args: [{ field: 'task_id', name: 'task_id', required: true }],
+    args: [{ field: 'task_id', name: 'task_id', required: false }],
     options: [
+      { field: 'task_id', flags: '--task-id <id>', description: 'Task ID (alternative to positional arg)' },
       { field: 'name', flags: '--name <name>', description: 'Task name' },
       { field: 'description', flags: '--description <text>', description: 'Description' },
       { field: 'markdown_description', flags: '--markdown-description <md>', description: 'Markdown description' },
@@ -269,14 +271,17 @@ const deleteCommand: CommandDefinition = {
   group: 'tasks',
   subcommand: 'delete',
   description: 'Delete a task.',
-  examples: ['clickup tasks delete <task_id>'],
+  examples: ['clickup tasks delete <task_id>', 'clickup tasks delete --task-id abc123'],
 
   inputSchema: z.object({
     task_id: z.string().describe('Task ID'),
   }),
 
   cliMappings: {
-    args: [{ field: 'task_id', name: 'task_id', required: true }],
+    args: [{ field: 'task_id', name: 'task_id', required: false }],
+    options: [
+      { field: 'task_id', flags: '--task-id <id>', description: 'Task ID (alternative to positional arg)' },
+    ],
   },
 
   endpoint: { method: 'DELETE', path: '/task/{task_id}' },
@@ -375,7 +380,10 @@ const timeInStatusCommand: CommandDefinition = {
   }),
 
   cliMappings: {
-    args: [{ field: 'task_id', name: 'task_id', required: true }],
+    args: [{ field: 'task_id', name: 'task_id', required: false }],
+    options: [
+      { field: 'task_id', flags: '--task-id <id>', description: 'Task ID (alternative to positional arg)' },
+    ],
   },
 
   endpoint: { method: 'GET', path: '/task/{task_id}/time_in_status' },

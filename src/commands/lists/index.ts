@@ -6,17 +6,22 @@ const listInFolderCommand: CommandDefinition = {
   name: 'lists_list',
   group: 'lists',
   subcommand: 'list',
-  description: 'Get all lists in a folder.',
-  examples: ['clickup lists list --folder-id 123'],
+  description: 'Get lists in a folder (--folder-id) or folderless lists in a space (--space-id).',
+  examples: [
+    'clickup lists list --folder-id 123',
+    'clickup lists list --space-id 456',
+  ],
 
   inputSchema: z.object({
-    folder_id: z.string().describe('Folder ID'),
+    folder_id: z.string().optional().describe('Folder ID (use this OR --space-id)'),
+    space_id: z.string().optional().describe('Space ID — returns folderless lists'),
     archived: z.string().optional().describe('Include archived (true/false)'),
   }),
 
   cliMappings: {
     options: [
       { field: 'folder_id', flags: '--folder-id <id>', description: 'Folder ID' },
+      { field: 'space_id', flags: '--space-id <id>', description: 'Space ID (folderless lists)' },
       { field: 'archived', flags: '--archived <bool>', description: 'Include archived' },
     ],
   },
@@ -24,7 +29,22 @@ const listInFolderCommand: CommandDefinition = {
   endpoint: { method: 'GET', path: '/folder/{folder_id}/list' },
   fieldMappings: { folder_id: 'path', archived: 'query' },
 
-  handler: (input, client) => executeCommand(listInFolderCommand, input, client),
+  handler: async (input, client) => {
+    const { folder_id, space_id, archived } = input;
+    if (!folder_id && !space_id) {
+      throw new Error('Provide --folder-id or --space-id. Use --space-id for folderless lists.');
+    }
+    if (folder_id && space_id) {
+      throw new Error('Provide --folder-id or --space-id, not both.');
+    }
+    const params: Record<string, any> = {};
+    if (archived !== undefined) params.archived = archived;
+
+    if (space_id) {
+      return client.get(`/space/${encodeURIComponent(space_id)}/list`, params);
+    }
+    return client.get(`/folder/${encodeURIComponent(folder_id!)}/list`, params);
+  },
 };
 
 const listFolderlessCommand: CommandDefinition = {
