@@ -1,5 +1,5 @@
 {
-  "name": "clickup-cli",
+  "name": "@bcharleson/clickup-cli",
   "version": "0.1.0",
   "description": "CLI and MCP server for the ClickUp API v2 — workspaces, spaces, folders, lists, tasks, comments, time tracking, goals, and more",
   "type": "module",
@@ -32,6 +32,13 @@
   ],
   "author": "Brandon Charleson",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bcharleson/clickup-cli.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=18.0.0"
   },
